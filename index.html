@@ -8,9 +8,15 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f2f2f0; color: #1a1a1a; }
 
-.topo { background: #0f6e56; padding: 16px; display: flex; align-items: center; gap: 10px; }
-.topo-badge { background: rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
-.topo h1 { color: #fff; font-size: 18px; font-weight: 500; }
+.topo {
+  background: #111111;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topo-marca { font-size: 20px; font-weight: 900; color: #cc1f1f; letter-spacing: 1px; }
+.topo-titulo { color: #ffffff; font-size: 15px; font-weight: 500; }
 
 .conteudo { padding: 14px 14px 130px 14px; }
 
@@ -25,7 +31,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-s
   font-size: 16px; background: #fafaf8; color: #1a1a1a;
   font-family: inherit; -webkit-appearance: none;
 }
-.campo input:focus, .campo textarea:focus { outline: none; border-color: #0f6e56; }
+.campo input:focus, .campo textarea:focus { outline: none; border-color: #cc1f1f; }
 .campo textarea { min-height: 70px; resize: vertical; }
 
 .cabecalho-itens { display: grid; grid-template-columns: 1fr 55px 90px 42px; gap: 6px; margin-bottom: 5px; }
@@ -37,7 +43,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-s
   font-size: 15px; background: #fafaf8; color: #1a1a1a;
   width: 100%; font-family: inherit; -webkit-appearance: none;
 }
-.item-linha input:focus { outline: none; border-color: #0f6e56; }
+.item-linha input:focus { outline: none; border-color: #cc1f1f; }
 .item-linha input[type=number] { text-align: center; }
 
 .btn-remover {
@@ -62,7 +68,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-s
   font-size: 16px; background: #fafaf8; color: #1a1a1a;
   font-family: inherit; -webkit-appearance: none; text-align: right;
 }
-.desconto-wrap input:focus { outline: none; border-color: #0f6e56; }
+.desconto-wrap input:focus { outline: none; border-color: #cc1f1f; }
 .desconto-wrap span {
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
   font-size: 15px; color: #888; font-weight: 600; pointer-events: none;
@@ -86,8 +92,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-s
 <body>
 
 <div class="topo">
-  <span class="topo-badge">Dr. Farol</span>
-  <h1>Novo Pedido</h1>
+  <span class="topo-marca">Dr. Farol</span>
+  <span class="topo-titulo">Novo Pedido</span>
 </div>
 
 <div class="conteudo">
@@ -128,8 +134,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-s
   </div>
 
   <div class="bloco">
-    <div class="bloco-titulo">Observações</div>
-    <div class="campo"><textarea id="obs" placeholder="Prazo de entrega, forma de pagamento, garantia..."></textarea></div>
+    <div class="bloco-titulo">Informações Adicionais</div>
+    <div class="campo"><label>Endereço de Entrega</label><input type="text" id="endereco" placeholder="Rua, número, bairro, cidade" /></div>
+    <div class="campo"><label>Prazo de Entrega</label><input type="text" id="prazo" placeholder="Ex: 5 dias úteis" /></div>
+    <div class="campo"><label>Forma de Pagamento</label><input type="text" id="pagamento" placeholder="Ex: Boleto, PIX, 30/60 dias" /></div>
+    <div class="campo"><label>Garantia</label><input type="text" id="garantia" placeholder="Ex: 90 dias" /></div>
+    <div class="campo"><label>Observações</label><textarea id="obs" placeholder="Informações complementares..."></textarea></div>
   </div>
 
 </div>
@@ -184,7 +194,6 @@ function recalcular() {
   if (pct > 100) pct = 100;
   var valorDesc = subtotal * (pct / 100);
   var total = subtotal - valorDesc;
-
   document.getElementById('exib-sub').textContent = dinheiro(subtotal);
   document.getElementById('exib-pct').textContent = pct % 1 === 0 ? pct : pct.toFixed(1);
   document.getElementById('exib-desc').textContent = '- ' + dinheiro(valorDesc);
@@ -192,12 +201,16 @@ function recalcular() {
 }
 
 function enviarWhatsApp() {
-  var razao = document.getElementById('razao').value.trim();
-  var cnpj = document.getElementById('cnpj').value.trim();
-  var ie = document.getElementById('ie').value.trim();
-  var tel = document.getElementById('tel').value.trim();
-  var email = document.getElementById('email').value.trim();
-  var obs = document.getElementById('obs').value.trim();
+  var razao     = document.getElementById('razao').value.trim();
+  var cnpj      = document.getElementById('cnpj').value.trim();
+  var ie        = document.getElementById('ie').value.trim();
+  var tel       = document.getElementById('tel').value.trim();
+  var email     = document.getElementById('email').value.trim();
+  var endereco  = document.getElementById('endereco').value.trim();
+  var prazo     = document.getElementById('prazo').value.trim();
+  var pagamento = document.getElementById('pagamento').value.trim();
+  var garantia  = document.getElementById('garantia').value.trim();
+  var obs       = document.getElementById('obs').value.trim();
 
   var temItem = false;
   var subtotal = 0;
@@ -205,8 +218,8 @@ function enviarWhatsApp() {
 
   for (var i = 1; i <= contador; i++) {
     if (!document.getElementById('item-' + i)) continue;
-    var desc = document.getElementById('desc-' + i).value.trim();
-    var qtd = parseFloat(document.getElementById('qtd-' + i).value) || 0;
+    var desc  = document.getElementById('desc-' + i).value.trim();
+    var qtd   = parseFloat(document.getElementById('qtd-' + i).value) || 0;
     var preco = parseFloat(document.getElementById('preco-' + i).value) || 0;
     if (!desc && preco === 0) continue;
     temItem = true;
@@ -228,17 +241,22 @@ function enviarWhatsApp() {
   var msg = '🔦 *PEDIDO — DR. FAROL*\n';
   msg += '──────────────────────\n';
   msg += '*Cliente:* ' + razao + '\n';
-  if (cnpj) msg += '*CNPJ:* ' + cnpj + '\n';
-  if (ie) msg += '*Insc. Est.:* ' + ie + '\n';
-  if (tel) msg += '*Telefone:* ' + tel + '\n';
-  if (email) msg += '*E-mail:* ' + email + '\n';
+  if (cnpj)     msg += '*CNPJ:* ' + cnpj + '\n';
+  if (ie)       msg += '*Insc. Est.:* ' + ie + '\n';
+  if (tel)      msg += '*Telefone:* ' + tel + '\n';
+  if (email)    msg += '*E-mail:* ' + email + '\n';
+  if (endereco) msg += '*Endereço:* ' + endereco + '\n';
   msg += '──────────────────────\n';
   msg += '*ITENS:*' + textoItens + '\n';
   msg += '──────────────────────\n';
   msg += '*Subtotal:* ' + dinheiro(subtotal) + '\n';
-  if (pct > 0) msg += '*Desconto (' + pct + '%):* - ' + dinheiro(valorDesc) + '\n';
+  if (pct > 0)  msg += '*Desconto (' + pct + '%):* - ' + dinheiro(valorDesc) + '\n';
   msg += '*TOTAL: ' + dinheiro(total) + '*\n';
-  if (obs) { msg += '──────────────────────\n'; msg += '*Obs:* ' + obs + '\n'; }
+  msg += '──────────────────────\n';
+  if (prazo)     msg += '*Prazo de Entrega:* ' + prazo + '\n';
+  if (pagamento) msg += '*Forma de Pagamento:* ' + pagamento + '\n';
+  if (garantia)  msg += '*Garantia:* ' + garantia + '\n';
+  if (obs)       msg += '*Obs:* ' + obs + '\n';
   msg += '──────────────────────\n';
   msg += '_Qualquer dúvida, estamos à disposição!_ ✅';
 
